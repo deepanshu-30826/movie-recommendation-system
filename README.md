@@ -34,7 +34,7 @@ python -m streamlit run app.py
 
 ## Author
 
-Deepanshu Sharma
+Sharma Deepanshu Rakesh
 
 ## Project Highlights
 
