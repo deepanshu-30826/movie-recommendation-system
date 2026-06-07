@@ -5,7 +5,7 @@ Content-based movie recommendation system built using Machine Learning.
 
 ## Preview
 
-![Project Screenshot](assets/screenshot.png)
+![Project Screenshot](assets/image.png)
 
 ## Features
 - Search movies
