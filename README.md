@@ -29,7 +29,18 @@ TMDB 5000 Movies Dataset
 CountVectorizer + Cosine Similarity
 
 ## How to Run
-
 pip install -r requirements.txt
-
 python -m streamlit run app.py
+
+## Author
+
+Deepanshu Sharma
+
+## Project Highlights
+
+- Content-Based Movie Recommendation System
+- TMDB 5000 Movies Dataset
+- CountVectorizer for Feature Extraction
+- Cosine Similarity for Recommendation
+- Interactive Streamlit Web App
+- Machine Learning Powered Suggestions
