@@ -1,21 +1,35 @@
 import pandas as pd
 import ast
+import pickle
 
-# Load datasets
+# -------------------------
+# Load Datasets
+# -------------------------
+
 movies = pd.read_csv("tmdb_5000_movies.csv")
 credits = pd.read_csv("tmdb_5000_credits.csv")
 
 # Merge datasets
 movies = movies.merge(credits, on="title")
 
-# Required columns only
+# Required columns
 movies = movies[
-    ['movie_id', 'title', 'overview', 'genres', 'keywords', 'cast', 'crew','vote_average','release_date','popularity']
+    [
+        'movie_id',
+        'title',
+        'overview',
+        'genres',
+        'keywords',
+        'cast',
+        'crew',
+        'vote_average',
+        'release_date',
+        'popularity'
+    ]
 ]
 
 # Remove null values
 movies.dropna(inplace=True)
-
 
 # -------------------------
 # Helper Functions
@@ -32,6 +46,7 @@ def convert(text):
 
 def convert_cast(text):
     L = []
+
     counter = 0
 
     for i in ast.literal_eval(text):
@@ -56,7 +71,6 @@ def fetch_director(text):
 
     return L
 
-
 # -------------------------
 # Data Processing
 # -------------------------
@@ -69,10 +83,12 @@ movies['cast'] = movies['cast'].apply(convert_cast)
 
 movies['crew'] = movies['crew'].apply(fetch_director)
 
-movies['overview'] = movies['overview'].apply(lambda x: x.split())
+movies['overview'] = movies['overview'].apply(
+    lambda x: x.split()
+)
 
+# Remove spaces
 
-# Remove spaces from names
 movies['genres'] = movies['genres'].apply(
     lambda x: [i.replace(" ", "") for i in x]
 )
@@ -89,8 +105,10 @@ movies['crew'] = movies['crew'].apply(
     lambda x: [i.replace(" ", "") for i in x]
 )
 
+# -------------------------
+# Create Tags
+# -------------------------
 
-# Create tags column
 movies['tags'] = (
     movies['overview']
     + movies['genres']
@@ -98,23 +116,47 @@ movies['tags'] = (
     + movies['cast']
     + movies['crew']
 )
-movies['overview_text'] = movies['overview'].apply(lambda x: " ".join(x))
-# Final dataframe
-new_df = movies[['movie_id', 'title', 'tags','overview_text','vote_average','release_date','popularity']]
 
-# Convert list -> string
+# Save overview text separately
+
+movies['overview_text'] = movies['overview'].apply(
+    lambda x: " ".join(x)
+)
+
+# Final dataframe
+
+new_df = movies[
+    [
+        'movie_id',
+        'title',
+        'tags',
+        'overview_text',
+        'vote_average',
+        'release_date',
+        'popularity'
+    ]
+]
+
+# Convert tags list -> string
+
 new_df['tags'] = new_df['tags'].apply(
     lambda x: " ".join(x)
 )
 
 # Lowercase
+
 new_df['tags'] = new_df['tags'].apply(
     lambda x: x.lower()
 )
 
 # -------------------------
-# Output
+# Save Final Dataset
 # -------------------------
+
+pickle.dump(
+    new_df,
+    open("movies.pkl", "wb")
+)
 
 print("\nDataset Ready ✅")
 print(new_df.head())
@@ -122,35 +164,4 @@ print(new_df.head())
 print("\nShape:")
 print(new_df.shape)
 
-print("\nSample Tags:")
-print(new_df['tags'].iloc[0][:500])
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import pickle
-
-cv = CountVectorizer(
-    max_features=5000,
-    stop_words='english'
-)
-
-vectors = cv.fit_transform(
-    new_df['tags']
-).toarray()
-
-print("Vector Shape:", vectors.shape)
-
-similarity = cosine_similarity(vectors)
-
-print("Similarity Shape:", similarity.shape)
-
-pickle.dump(
-    new_df.to_dict(),
-    open('movies_dict.pkl', 'wb')
-)
-
-pickle.dump(
-    similarity,
-    open('similarity.pkl', 'wb')
-)
-
-print("\nFiles Saved Successfully ✅")
+print("\nmovies.pkl Saved Successfully ✅")
