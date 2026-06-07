@@ -3,6 +3,10 @@
 ## Overview
 Content-based movie recommendation system built using Machine Learning.
 
+## Preview
+
+![Project Screenshot](assets/screenshot.png)
+
 ## Features
 - Search movies
 - Top 5 recommendations
@@ -25,5 +29,7 @@ TMDB 5000 Movies Dataset
 CountVectorizer + Cosine Similarity
 
 ## How to Run
+
 pip install -r requirements.txt
+
 python -m streamlit run app.py
